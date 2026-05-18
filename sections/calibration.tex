@@ -14,22 +14,20 @@ In our original analysis, the base model achieved 78.0\% accuracy with ECE = 0.1
 
 \begin{table}[h]
 \centering
-\begin{tabular}{l l c c}
+\begin{tabular}{l l l c c}
 \toprule
-\textbf{Method} & \textbf{Type} & \textbf{Accuracy} & \textbf{ECE $\downarrow$} \\
+\textbf{Category} & \textbf{Method} & \textbf{Type} & \textbf{Accuracy} & \textbf{ECE $\downarrow$} \\
 \midrule
-Base Model & --- & 78.00\% & 0.1278 \\
+Base & Base Model & --- & 78.00\% & 0.1278 \\
 \midrule
-\multicolumn{4}{l}{\textit{Main Assignment Methods}} \\
-\quad Temp Scaling ($T\!=\!3.0$) & Post-hoc & 78.00\% & 0.0373 \\
-\quad MC Dropout (30 passes) & Inference & 77.75\% & 0.1022 \\
-\quad Label Smoothing ($\alpha\!=\!0.1$) & Train-time & 78.00\% & 0.0397 \\
+Main Assignment & Temp Scaling ($T\!=\!3.0$) & Post-hoc & 78.00\% & 0.0373 \\
+Main Assignment & MC Dropout (30 passes) & Inference & 77.75\% & 0.1022 \\
+Main Assignment & Label Smoothing ($\alpha\!=\!0.1$) & Train-time & 78.00\% & 0.0397 \\
 \midrule
-\multicolumn{4}{l}{\textit{Extra Credit Methods}} \\
-\quad Platt Scaling & Post-hoc & 77.25\% & 0.0525 \\
-\quad Weight Decay ($\lambda\!=\!10^{-2}$) & Train-time & 77.75\% & 0.1066 \\
-\quad Focal Loss ($\gamma\!=\!2.0$) & Train-time & 78.75\% & \textbf{0.0363} \\
-\quad Mixup ($\alpha\!=\!0.4$) & Train-time & 76.75\% & 0.0805 \\
+Extra Credit & Platt Scaling & Post-hoc & 77.25\% & 0.0525 \\
+Extra Credit & Weight Decay ($\lambda\!=\!10^{-2}$) & Train-time & 77.75\% & 0.1066 \\
+Extra Credit & Focal Loss ($\gamma\!=\!2.0$) & Train-time & 78.75\% & \textbf{0.0363} \\
+Extra Credit & Mixup ($\alpha\!=\!0.4$) & Train-time & 76.75\% & 0.0805 \\
 \bottomrule
 \end{tabular}
 \caption{Calibration comparison across all methods. ECE = Expected Calibration Error.}
