@@ -1,12 +1,13 @@
 \section*{Additional Calibration Methods for the Emoji Hunter Task}
 
 \subsection*{Problem \& Approach}
-Neural networks are often overconfident---assigning high probability even when wrong. In HW\,2, we trained an MLP classifier on frozen DINOv2 features for binary emoji detection (1200 train / 400 test, 128$\times$128 images). The base model achieved 78.0\% accuracy with ECE = 0.1278. The main assignment explored temperature scaling, MC dropout, and label smoothing. Here we evaluate three additional methods:
+Neural networks are often overconfident---assigning high probability even when wrong. In HW\,2, we trained an MLP classifier on frozen DINOv2 features for binary emoji detection (1200 train / 400 test, 128$\times$128 images). The base model achieved 78.0\% accuracy with ECE = 0.1278. The main assignment explored temperature scaling, MC dropout, and label smoothing. Here we evaluate four additional methods:
 
 \begin{itemize}
     \item \textbf{Platt Scaling} (post-hoc): Fits a logistic regression on the model's raw logits using a held-out validation set, learning both a slope and bias---more flexible than temperature scaling's single parameter. We split training data 80/20, retrained a fresh model, and fit \texttt{sklearn.LogisticRegression} on validation logits.
     \item \textbf{Weight Decay} (train-time): Adds an L2 penalty $\lambda \|w\|^2$ to the loss, encouraging smaller weights. We tested $\lambda \in \{10^{-4}, 10^{-3}, 10^{-2}\}$ with Adam and selected the best ECE.
     \item \textbf{Focal Loss} (train-time): Modifies cross-entropy with a modulating factor $\text{FL}(p_t) = -(1 - p_t)^\gamma \log(p_t)$ that downweights easy examples \cite{lin2017focal}. We tested $\gamma \in \{1.0, 2.0, 3.0\}$.
+    \item \textbf{Mixup} (train-time): Trains on convex combinations of input pairs $\tilde{x} = \lambda x_i + (1-\lambda)x_j$ with blended labels, where $\lambda \sim \text{Beta}(\alpha, \alpha)$ \cite{zhang2018mixup}. This forces intermediate confidences. We tested $\alpha \in \{0.1, 0.2, 0.4\}$.
 \end{itemize}
 
 \subsection*{Results}
@@ -28,6 +29,7 @@ Base Model & --- & 78.00\% & 0.1278 \\
 \quad Platt Scaling & Post-hoc & 77.25\% & 0.0525 \\
 \quad Weight Decay ($\lambda\!=\!10^{-2}$) & Train-time & 77.75\% & 0.1066 \\
 \quad Focal Loss ($\gamma\!=\!2.0$) & Train-time & 78.75\% & \textbf{0.0363} \\
+\quad Mixup ($\alpha\!=\!0.4$) & Train-time & 76.75\% & 0.0805 \\
 \bottomrule
 \end{tabular}
 \caption{Calibration comparison across all methods. ECE = Expected Calibration Error.}
@@ -41,9 +43,13 @@ Base Model & --- & 78.00\% & 0.1278 \\
 
 \textbf{Weight Decay} (ECE = 0.1066) gave only modest improvement. Generic L2 regularization does not directly target calibration, making it the weakest method tested.
 
-\textbf{Takeaway:} Methods that directly penalize overconfidence (focal loss, label smoothing) or post-hoc rescale probabilities (temperature/Platt scaling) substantially outperform generic regularization (weight decay, MC dropout) for calibration.
+\textbf{Mixup} (ECE = 0.0805) regularizes in the input space by blending training examples, encouraging the model to produce softer predictions. It successfully improved calibration over the base model by inherently penalizing hard, overconfident target assignments.
+
+\textbf{Takeaway:} Methods that directly penalize overconfidence (focal loss, label smoothing, mixup) or post-hoc rescale probabilities (temperature/Platt scaling) substantially outperform generic regularization (weight decay, MC dropout) for calibration.
 
 \begin{thebibliography}{9}
 \bibitem{lin2017focal}
 T.-Y.\ Lin, P.\ Goyal, R.\ Girshick, K.\ He, and P.\ Doll\'{a}r, ``Focal Loss for Dense Object Detection,'' \textit{arXiv:1708.02002}, 2017.
+\bibitem{zhang2018mixup}
+H.\ Zhang, M.\ Ciss\'{e}, Y.\ Dauphin, and D.\ Lopez-Paz, ``mixup: Beyond Empirical Risk Minimization,'' \textit{arXiv:1710.09412}, 2018.
 \end{thebibliography}
