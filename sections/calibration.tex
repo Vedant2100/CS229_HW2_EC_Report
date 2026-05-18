@@ -35,15 +35,15 @@ Train-time & Mixup ($\alpha\!=\!0.4$) & 76.75\% & 0.0805 \\
 \end{table}
 
 \subsection*{Discussion}
-\textbf{Focal Loss} ($\gamma\!=\!2.0$) achieved the best ECE overall (0.0363), slightly outperforming temperature scaling (0.0373). By downweighting easy examples during training, it inherently discourages overconfident predictions without any post-hoc adjustment.
 
-\textbf{Platt Scaling} (ECE = 0.0525) improved over the base model but underperformed simpler temperature scaling despite having more parameters. The small validation set (240 samples) likely limited its effectiveness.
+\textbf{Global Summary:} All evaluated methods improved calibration over the base model (ECE = 0.1278). The best overall method was \textbf{Focal Loss} ($\gamma\!=\!2.0$), achieving an ECE of 0.0363, closely followed by Temperature Scaling (0.0373).
 
-\textbf{Weight Decay} (ECE = 0.1066) gave only modest improvement. Generic L2 regularization does not directly target calibration, making it the weakest method tested.
-
-\textbf{Mixup} (ECE = 0.0805) regularizes in the input space by blending training examples, encouraging the model to produce softer predictions. It successfully improved calibration over the base model by inherently penalizing hard, overconfident target assignments.
-
-\textbf{Takeaway:} Methods that directly penalize overconfidence (focal loss, label smoothing, mixup) or post-hoc rescale probabilities (temperature/Platt scaling) substantially outperform generic regularization (weight decay, MC dropout) for calibration.
+\textbf{Best by Category:}
+\begin{itemize}
+    \item \textbf{Train-time:} \textbf{Focal Loss} ($\gamma\!=\!2.0$) was the most effective (ECE = 0.0363). By explicitly downweighting easy examples during training, it natively aligns confidence with accuracy better than Label Smoothing, Mixup, or Weight Decay.
+    \item \textbf{Post-hoc:} \textbf{Temperature Scaling} ($T\!=\!3.0$) performed best (ECE = 0.0373). Despite its simplicity, it outperformed Platt Scaling, likely because Platt Scaling's additional parameters were prone to overfitting on the small validation set.
+    \item \textbf{Inference:} \textbf{MC Dropout} (30 passes) provided only a modest improvement (ECE = 0.1022). It relies on stochastic forward passes rather than directly targeting confidence distributions, making it less effective than the other categories.
+\end{itemize}
 
 % \begin{thebibliography}{9}
 % \bibitem{lin2017focal}
